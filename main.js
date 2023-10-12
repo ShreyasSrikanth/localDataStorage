@@ -20,9 +20,19 @@ function addlocalStorage(e){
     var ul = document.createElement('ul');
 
     var li = document.createElement('li');
-    li.textContent = 'Name: ' + name + ' Email: ' + email + " Phone: " + phone;
+    li.textContent = 'Name: ' + name + ' Email: ' + email + ' Phone: ' + phone;
+    
+    // Create a delete button
+    var deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    
+    deleteButton.addEventListener('click', function() {
+        ul.removeChild(li);
+        localStorage.removeItem(email)
+    });
+    
+    li.appendChild(deleteButton);
     ul.appendChild(li);
-
     displayDiv.appendChild(ul);
 
     document.getElementById('name').value = '';
