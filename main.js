@@ -24,13 +24,32 @@ function addlocalStorage(e){
     
     // Create a delete button
     var deleteButton = document.createElement('button');
+    var editButton = document.createElement('button');
+
     deleteButton.textContent = 'Delete';
-    
-    deleteButton.addEventListener('click', function() {
+    editButton.textContent='Edit';
+
+    deleteButton.addEventListener('click', delBun);
+
+    function delBun(e) {
         ul.removeChild(li);
         localStorage.removeItem(email)
-    });
+    }
+
+    editButton.addEventListener('click',editBun);
+
+    function editBun(e) {
+        var userData = JSON.parse(localStorage.getItem(email));
+
+        document.getElementById('name').value = userData.name;
+        document.getElementById('email').value = userData.email;
+        document.getElementById('phone').value = userData.phone;
+
+        localStorage.removeItem(email);
+        ul.removeChild(li);
+    }
     
+    li.appendChild(editButton);
     li.appendChild(deleteButton);
     ul.appendChild(li);
     displayDiv.appendChild(ul);
