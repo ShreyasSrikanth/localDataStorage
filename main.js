@@ -2,6 +2,68 @@ var form = document.getElementById('use-data');
 
 form.addEventListener('submit',addlocalStorage)
 
+
+function fetchDataFromApi() {
+    return axios.get('https://crudcrud.com/api/8ceb27b185ac4e7496e63739dbb80b26/appointmentData')
+        .then(response => response.data)
+        .catch(error => {
+            console.error(error);
+            return [];
+        });
+}
+
+function displayRecords(records, displayDiv) {
+    var ul = document.createElement('ul');
+
+    records.forEach(record => {
+        var li = document.createElement('li');
+        li.textContent = 'Name: ' + record.name + ' Email: ' + record.email + ' Phone: ' + record.phone;
+
+        var deleteButton = document.createElement('button');
+        var editButton = document.createElement('button');
+
+        deleteButton.textContent = 'Delete';
+        editButton.textContent = 'Edit';
+
+        deleteButton.style.margin = '0 5px';
+        editButton.style.margin = '0 5px';
+
+        deleteButton.addEventListener('click', delBun);
+        editButton.addEventListener('click', editBun);
+
+        function delBun(e) {
+            ul.removeChild(li);
+            localStorage.removeItem(record.email);
+        }
+
+        function editBun(e) {
+            var userData = JSON.parse(localStorage.getItem(record.email));
+
+            document.getElementById('name').value = userData.name;
+            document.getElementById('email').value = userData.email;
+            document.getElementById('phone').value = userData.phone;
+
+            localStorage.removeItem(record.email);
+            ul.removeChild(li);
+        }
+
+        li.appendChild(editButton);
+        li.appendChild(deleteButton);
+
+        ul.appendChild(li);
+    });
+
+    displayDiv.appendChild(ul);
+
+    alert('User data displayed in the specified div!');
+}
+
+var displayDiv = document.getElementById('display-data');
+
+fetchDataFromApi()
+    .then(records => displayRecords(records, displayDiv));
+
+
 function addlocalStorage(e){
     e.preventDefault();
 
@@ -13,50 +75,19 @@ function addlocalStorage(e){
 
     var userJSON = JSON.stringify(obj);
 
-    localStorage.setItem(email, userJSON);
+    // localStorage.setItem(email, userJSON);
 
-    var displayDiv = document.getElementById('display-data');
-
-    var ul = document.createElement('ul');
-
-    var li = document.createElement('li');
-    li.textContent = 'Name: ' + name + ' Email: ' + email + ' Phone: ' + phone;
+    // const obj = {
+    //     Name,
+    //     email,
+    //     phonenumber
+    // }
     
-    // Create a delete button
-    var deleteButton = document.createElement('button');
-    var editButton = document.createElement('button');
+    axios.post('https://crudcrud.com/api/8ceb27b185ac4e7496e63739dbb80b26/appointmentData',obj)
+    .then((response) =>{
+        console.log(response.data)
+    })
+    .catch(err => console.log(err))
 
-    deleteButton.textContent = 'Delete';
-    editButton.textContent='Edit';
 
-    deleteButton.addEventListener('click', delBun);
-
-    function delBun(e) {
-        ul.removeChild(li);
-        localStorage.removeItem(email)
-    }
-
-    editButton.addEventListener('click',editBun);
-
-    function editBun(e) {
-        var userData = JSON.parse(localStorage.getItem(email));
-
-        document.getElementById('name').value = userData.name;
-        document.getElementById('email').value = userData.email;
-        document.getElementById('phone').value = userData.phone;
-
-        localStorage.removeItem(email);
-        ul.removeChild(li);
-    }
-    
-    li.appendChild(editButton);
-    li.appendChild(deleteButton);
-    ul.appendChild(li);
-    displayDiv.appendChild(ul);
-
-    document.getElementById('name').value = '';
-    document.getElementById('email').value = '';
-    document.getElementById('phone').value = '';
-
-    alert('User data stored in local storage!');
 }
