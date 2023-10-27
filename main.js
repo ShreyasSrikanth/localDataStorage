@@ -1,10 +1,9 @@
 var form = document.getElementById('use-data');
 
-form.addEventListener('submit',addlocalStorage)
-
+form.addEventListener('submit', addlocalStorage);
 
 function fetchDataFromApi() {
-    return axios.get('https://crudcrud.com/api/8ceb27b185ac4e7496e63739dbb80b26/appointmentData')
+    return axios.get('https://crudcrud.com/api/ea76a5fe12b7412d95d0ba59057acc40/appointmentData')
         .then(response => response.data)
         .catch(error => {
             console.error(error);
@@ -29,10 +28,10 @@ function displayRecords(records, displayDiv) {
         editButton.style.margin = '0 5px';
 
         deleteButton.addEventListener('click', () => delBun(record._id));
-        editButton.addEventListener('click', editBun);
+        editButton.addEventListener('click', () => editBun(record));
 
         function delBun(recordId) {
-            axios.delete(`https://crudcrud.com/api/8ceb27b185ac4e7496e63739dbb80b26/appointmentData/${recordId}`)
+            axios.delete(`https://crudcrud.com/api/ea76a5fe12b7412d95d0ba59057acc40/appointmentData/${recordId}`)
                 .then(response => {
                     ul.removeChild(li);
                     alert('Record deleted successfully!');
@@ -43,15 +42,34 @@ function displayRecords(records, displayDiv) {
                 });
         }
 
-        function editBun(e) {
-            var userData = JSON.parse(localStorage.getItem(record.email));
+        function editBun(record) {
+            document.getElementById('name').value = record.name;
+            document.getElementById('email').value = record.email;
+            document.getElementById('phone').value = record.phone;
 
-            document.getElementById('name').value = userData.name;
-            document.getElementById('email').value = userData.email;
-            document.getElementById('phone').value = userData.phone;
+            form.removeEventListener('submit', addlocalStorage);
 
-            localStorage.removeItem(record.email);
-            ul.removeChild(li);
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                var updatedName = document.getElementById('name').value;
+                var updatedEmail = document.getElementById('email').value;
+                var updatedPhone = document.getElementById('phone').value;
+
+                axios.put(`https://crudcrud.com/api/ea76a5fe12b7412d95d0ba59057acc40/appointmentData/${record._id}`, {
+                    name: updatedName,
+                    email: updatedEmail,
+                    phone: updatedPhone
+                })
+                .then(response => {
+                    alert('User data updated successfully!');
+                    form.removeEventListener('submit', arguments.callee);
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert('Error updating user data.');
+                });
+            });
         }
 
         li.appendChild(editButton);
@@ -70,31 +88,20 @@ var displayDiv = document.getElementById('display-data');
 fetchDataFromApi()
     .then(records => displayRecords(records, displayDiv));
 
-
-function addlocalStorage(e){
+function addlocalStorage(e) {
     e.preventDefault();
 
     var name = document.getElementById("name").value;
     var email = document.getElementById("email").value;
     var phone = document.getElementById("phone").value;
 
-    var obj ={name:name,email:email,phone:phone};
+    var obj = { name: name, email: email, phone: phone };
 
     var userJSON = JSON.stringify(obj);
 
-    // localStorage.setItem(email, userJSON);
-
-    // const obj = {
-    //     Name,
-    //     email,
-    //     phonenumber
-    // }
-    
-    axios.post('https://crudcrud.com/api/8ceb27b185ac4e7496e63739dbb80b26/appointmentData',obj)
-    .then((response) =>{
-        console.log(response.data)
-    })
-    .catch(err => console.log(err))
-
-
+    axios.post('https://crudcrud.com/api/ea76a5fe12b7412d95d0ba59057acc40/appointmentData', obj)
+        .then(response => {
+            console.log(response.data);
+        })
+        .catch(err => console.log(err));
 }
