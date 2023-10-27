@@ -16,8 +16,7 @@ function displayRecords(records, displayDiv) {
     var ul = document.createElement('ul');
 
     records.forEach(record => {
-        var li = document.createElement('li');
-        li.textContent = 'Name: ' + record.name + ' Email: ' + record.email + ' Phone: ' + record.phone;
+        li.textContent = 'Name:' + record.name + ' Email:' + record.email + ' Phone:' + record.phone;
 
         var deleteButton = document.createElement('button');
         var editButton = document.createElement('button');
