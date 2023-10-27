@@ -16,7 +16,8 @@ function displayRecords(records, displayDiv) {
     var ul = document.createElement('ul');
 
     records.forEach(record => {
-        li.textContent = 'Name:' + record.name + ' Email:' + record.email + ' Phone:' + record.phone;
+        var li = document.createElement('li');
+        li.textContent = 'Name: ' + record.name + ' Email: ' + record.email + ' Phone: ' + record.phone;
 
         var deleteButton = document.createElement('button');
         var editButton = document.createElement('button');
@@ -27,12 +28,19 @@ function displayRecords(records, displayDiv) {
         deleteButton.style.margin = '0 5px';
         editButton.style.margin = '0 5px';
 
-        deleteButton.addEventListener('click', delBun);
+        deleteButton.addEventListener('click', () => delBun(record._id));
         editButton.addEventListener('click', editBun);
 
-        function delBun(e) {
-            ul.removeChild(li);
-            localStorage.removeItem(record.email);
+        function delBun(recordId) {
+            axios.delete(`https://crudcrud.com/api/8ceb27b185ac4e7496e63739dbb80b26/appointmentData/${recordId}`)
+                .then(response => {
+                    ul.removeChild(li);
+                    alert('Record deleted successfully!');
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert('Error deleting record.');
+                });
         }
 
         function editBun(e) {
